@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { fetchVideo } from '../actions';
 import TextField from './TextField';
 import VideoPlayer from './VideoPlayer';
 
 const VideoDetails = (props: any)=>{
+    const [videoOnPlay, setVideoOnPlay] = useState(false)
     console.log(props)
     if (!props.video){
         return (
@@ -23,7 +24,7 @@ const VideoDetails = (props: any)=>{
     <div className="ui grid">
         <div className="two column row">
             <div className='column'>
-                <h3>Details for:</h3>
+                <h3>Details for: video1</h3>
                 <p>
                     Title: {props.video.title}
                     <br/>
@@ -33,11 +34,11 @@ const VideoDetails = (props: any)=>{
                 </p>
             </div>
             <div className='column'>
-                <VideoPlayer src={props.video.videoPath} />
+                <VideoPlayer src={props.video.videoPath} videoOnPlay={videoOnPlay} setVideoOnPlay={setVideoOnPlay}/>
             </div>
         </div>
         <div className='row'>
-            <TextField />
+            <TextField text={props.video.text} src={props.video.videoPath} timeStamp={props.video.timeStamp} videoOnPlay={videoOnPlay} setVideoOnPlay={setVideoOnPlay}/>
         </div>
     </div>);
 };

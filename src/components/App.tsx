@@ -1,12 +1,16 @@
 import React from 'react';
-import TextField from './TextField';
+import Header from './Header';
 import VideoDetails from './VideoDetails';
 
 
 const App: React.FC = () => {
   return (
-    <div className="ui container">
-      <VideoDetails />
+    <div>
+      
+      <div className="ui container">
+      <Header />
+        <VideoDetails />
+      </div>
     </div>
   );
 }
