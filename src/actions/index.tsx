@@ -2,7 +2,7 @@ import {
     FETCH_VIDEO
 }  from './types'
 
-const fileNames = ['Reaction_Time.mp4']
+const fileNames = ['videos/Reaction_Time.mp4']
 const TRANSCRIPT = "videos/transcript.json"
 
 export const fetchVideo = () => async (dispatch: any) => {
