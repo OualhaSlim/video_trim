@@ -1,40 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+import { connect } from 'react-redux';
+import { generateCroppedVideo } from '../actions';
 import { Editor, ContentState, EditorState } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
-const ffmpeg = createFFmpeg({ log: false })
 const createFromText = ContentState.createFromText
 const createWithContent = EditorState.createWithContent
 
 const TextField = (props:any) =>{
-    const [editorState, setEditorState] = useState(createWithContent(createFromText(props.text)));
+    const [editorState, setEditorState] = useState(createWithContent(createFromText(props.video.text)));
     const [editIsEnabled, setEditIsEnabled] = useState(false)
     const [textStyle, setTextStyle] = useState("")
-    const [ready, setReady] = useState(false)
     const [croppedVideoPath, setCroppedVideoPath] = useState('')
-
-    const load = async () =>{
-        await ffmpeg.load()
-        setReady(true)
-    }
     
 
-    useEffect(()=>{
-        // fix for ffmpeg error https://github.com/ffmpegwasm/react-app/issues/3#issuecomment-991958164
-        const script = document.createElement("script");
-        script.src = "../coi-serviceworker.js";
-        script.async = true;
-        document.body.appendChild(script);
-        load();
-    }, [])
     
     const convertToEditor = () =>{
         setEditIsEnabled(!editIsEnabled)
     }
 
     useEffect(()=>{
-        setEditorState(createWithContent(createFromText(props.text)))
+        setEditorState(createWithContent(createFromText(props.video.text)))
         if(editIsEnabled==true) setTextStyle("bg-secondary text-white");
         else setTextStyle("");
     }, [editIsEnabled])
@@ -44,18 +30,13 @@ const TextField = (props:any) =>{
         e.preventDefault();
         // Getting index of selected text 
         const selectionState      = editorState.getSelection();
-        const start = selectionState.getStartOffset();
-        const end = selectionState.getEndOffset()
-        console.log(start)
-        console.log(end)
-        ffmpeg.FS('writeFile', 'input_video.mp4', await fetchFile(props.src));
-
-        await ffmpeg.run('-i', `input_video.mp4`, '-t', `${props.timeStamp[end-start]}`, '-ss', `${props.timeStamp[start]}`, '-f', 'mp4', 'cropped_video.mp4')
+        const startIndex = selectionState.getStartOffset();
+        const endIndex = selectionState.getEndOffset()
+        const startInSeconds = props.video.timeStamp[startIndex]
+        const duration = props.video.timeStamp[endIndex] - props.video.timeStamp[startIndex]
         
-        const data = ffmpeg.FS('readFile', 'cropped_video.mp4')
-
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
-        setCroppedVideoPath(url)
+        props.setIsLoading(true)
+        props.generateCroppedVideo(props.video.videoPath, startInSeconds, duration, props.video.text.substring(startIndex, endIndex))
     }
 
     return (
@@ -76,12 +57,15 @@ const TextField = (props:any) =>{
                     />
                 </div>
             </div>
-            {editIsEnabled == true ? ready? <button className="ui button"onClick={generateTrimmedVideo}>Generate new video</button> : <p>Please wait loading video editor</p> : null}
-            {croppedVideoPath && <video src={croppedVideoPath} width="70%" height="auto" controls />}
+            {editIsEnabled == true ? <button className="ui button"onClick={generateTrimmedVideo}>Generate new video</button> : null}
             
              
         </div>
       );
 }
 
-export default TextField;
+const mapStateToProps = (state: any) =>{
+    return { video: state.videos_store.source_video };
+};
+
+export default connect(mapStateToProps, { generateCroppedVideo })( TextField);

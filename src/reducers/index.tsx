@@ -1,16 +1,20 @@
 import { combineReducers } from 'redux';
 import { 
-    FETCH_VIDEO
+    FETCH_VIDEO,
+    CROP_VIDEO
 } from "../actions/types";
 
-const selectedVideoReducer = (selectedVideo = null, action:any)=>{
+const videosReducer = (state = {}, action:any)=>{
     if(action.type === FETCH_VIDEO){
-        return action.payload
+        return {...state, ['source_video']: action.payload}
+    }
+    else if(action.type === CROP_VIDEO){
+        return {...state, ['cropped_video']: action.payload}
     }
 
-    return null;
+    return state;
 };
 
 export default combineReducers({
-    selectedVideo: selectedVideoReducer
+    videos_store: videosReducer
 });

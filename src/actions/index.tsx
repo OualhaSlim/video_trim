@@ -1,6 +1,9 @@
 import { 
-    FETCH_VIDEO
+    FETCH_VIDEO,
+    CROP_VIDEO
 }  from './types'
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+const ffmpeg = createFFmpeg({ log: true })
 
 const fileNames = ['videos/Reaction_Time.mp4']
 const TRANSCRIPT = "videos/transcript.json"
@@ -56,3 +59,26 @@ export const fetchVideo = () => async (dispatch: any) => {
     
     dispatch({ type:FETCH_VIDEO, payload: response })
 };
+
+export const generateCroppedVideo = (videoSource: any, start: number, duration: number, text: string) => async (dispatch: any) => {
+    if(!ffmpeg.isLoaded()) await ffmpeg.load()
+    let response = null
+    console.log(videoSource)
+    console.log(start)
+    console.log(duration)
+    if(videoSource){
+        ffmpeg.FS('writeFile', 'input_video.mp4', await fetchFile(videoSource));
+
+        await ffmpeg.run('-i', `input_video.mp4`, '-t', `${duration}`, '-ss', `${start}`, '-f', 'mp4', 'cropped_video.mp4')
+        
+        const data = ffmpeg.FS('readFile', 'cropped_video.mp4')
+
+        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+        response = {
+            text: text,
+            path: url
+        }
+    }
+
+    dispatch( {type: CROP_VIDEO, payload: response})
+}
