@@ -52,7 +52,7 @@ export const fetchVideo = () => async (dispatch: any) => {
                     text: fullText,
                     timeStamp: timeStampTracker,
                     duration: Math.round(timeStampTracker[timeStampTracker.length-1]),
-                    title: "Video Title"
+                    title: "Reaction_Time"
                 }
             }
         }).catch((err) =>console.log(err, ' error'))

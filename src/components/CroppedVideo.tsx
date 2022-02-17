@@ -3,13 +3,8 @@ import { connect } from 'react-redux';
 
 
 const CroppedVideo = (props:any) =>{
-    console.log("heeeeeeeeere")
     if(!props.video){
-        return (
-            <div>
-                Hello Im a video    
-            </div>
-          );
+        return null;
     }
     return(
         <div>

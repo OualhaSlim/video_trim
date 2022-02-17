@@ -11,9 +11,6 @@ const TextField = (props:any) =>{
     const [editorState, setEditorState] = useState(createWithContent(createFromText(props.video.text)));
     const [editIsEnabled, setEditIsEnabled] = useState(false)
     const [textStyle, setTextStyle] = useState("")
-    const [croppedVideoPath, setCroppedVideoPath] = useState('')
-    
-
     
     const convertToEditor = () =>{
         setEditIsEnabled(!editIsEnabled)
@@ -21,7 +18,7 @@ const TextField = (props:any) =>{
 
     useEffect(()=>{
         setEditorState(createWithContent(createFromText(props.video.text)))
-        if(editIsEnabled==true) setTextStyle("bg-secondary text-white");
+        if(editIsEnabled===true) setTextStyle("bg-secondary text-white ui segment");
         else setTextStyle("");
     }, [editIsEnabled])
 
@@ -44,10 +41,9 @@ const TextField = (props:any) =>{
             { props.videoOnPlay ? <button className="ui button" onClick={() => props.setVideoOnPlay(false)}>Pause</button>:
                 <button className="ui button" onClick={() => props.setVideoOnPlay(true)}>Play</button>
             }
-            <button className="ui button" onClick={convertToEditor}>
-              Modify
-            </button>
+            <i className="edit icon" onClick={convertToEditor}/>
             
+            <br/>
             <div className='row'>
                 <div className={textStyle}>
                     <Editor
@@ -57,7 +53,7 @@ const TextField = (props:any) =>{
                     />
                 </div>
             </div>
-            {editIsEnabled == true ? <button className="ui button"onClick={generateTrimmedVideo}>Generate new video</button> : null}
+            {editIsEnabled === true ? <button className="ui button right floated" onClick={generateTrimmedVideo}>Generate new video</button> : null}
             
              
         </div>

@@ -6,10 +6,10 @@ import {
 
 const videosReducer = (state = {}, action:any)=>{
     if(action.type === FETCH_VIDEO){
-        return {...state, ['source_video']: action.payload}
+        return {...state, 'source_video': action.payload}
     }
     else if(action.type === CROP_VIDEO){
-        return {...state, ['cropped_video']: action.payload}
+        return {...state, 'cropped_video': action.payload}
     }
 
     return state;

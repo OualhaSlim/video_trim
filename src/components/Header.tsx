@@ -6,8 +6,8 @@ const Header = () =>{
             <img
                 alt=""
                 src="./logoQlip.png"
-                width="30"
-                height="30"
+                width="60"
+                height="60"
                 className="d-inline-block align-top"
             />
         </div>

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { PacmanLoader } from 'react-spinners';
-import { fetchVideo } from '../actions';
+import { RingLoader } from 'react-spinners';
 import TextField from './TextField';
 import VideoPlayer from './VideoPlayer';
 import CroppedVideo from './CroppedVideo';
 
 const override = `
-  display: block;
-  margin: auto;
-  border-color: red;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -100px;
 `;
 
 const VideoDetails = (props: any)=>{
     const [videoOnPlay, setVideoOnPlay] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
-    console.log("rerendering")
     
     useEffect(()=>{
         // fix for ffmpeg error https://github.com/ffmpegwasm/react-app/issues/3#issuecomment-991958164
@@ -29,27 +29,18 @@ const VideoDetails = (props: any)=>{
         setIsLoading(false)
     }, [props.croppedVideo])
 
-    console.log(props)
     return(
         <>
-        {isLoading? <PacmanLoader color={'#36D7B7'} loading={isLoading} css={override} size={150} />
-        : !props.video ? <div>
-                            Select a video please:
-                            <button 
-                                className="ui button primary"
-                                onClick={()=> props.fetchVideo()}
-                            >
-                                Video1
-                            </button>
-                        </div>
-        : <div className="ui grid">
+        {isLoading || !props.video? <div>
+            <div className="ui huge header center aligned">Creating video in progress...</div>
+                <RingLoader color={'#36D7B7'} css={override} loading={isLoading} size={200} />
+            </div>
+        : <div className="ui grid padded" >
             <div className="two column row">
                 <div className='column'>
-                    <h3>Details for: video1</h3>
+                    <h3>Details for: {props.video.title}</h3>
                     <p>
-                        Title: {props.video.title}
-                        <br/>
-                        duration: {props.video.duration}
+                        duration: {props.video.duration} seconds
                         <br/>
                         number of speakers: {props.video.nbSpeakers}
                     </p>
@@ -74,4 +65,4 @@ const mapStateToProps = (state: any) =>{
     };
 };
 
-export default connect(mapStateToProps, { fetchVideo })(VideoDetails);
+export default connect(mapStateToProps, null)(VideoDetails);
