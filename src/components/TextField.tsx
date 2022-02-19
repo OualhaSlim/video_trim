@@ -29,19 +29,20 @@ const TextField = (props:any) =>{
         const selectionState      = editorState.getSelection();
         const startIndex = selectionState.getStartOffset();
         const endIndex = selectionState.getEndOffset()
-        const startInSeconds = props.video.timeStamp[startIndex]
-        const duration = props.video.timeStamp[endIndex] - props.video.timeStamp[startIndex]
-        
-        props.setIsLoading(true)
-        props.generateCroppedVideo(props.video.videoPath, startInSeconds, duration, props.video.text.substring(startIndex, endIndex))
+        if(startIndex !== endIndex){
+            const startInSeconds = props.video.timeStamp[startIndex]
+            const duration = props.video.timeStamp[endIndex] - props.video.timeStamp[startIndex]
+            
+            props.setIsLoading(true)
+            props.generateCroppedVideo(props.video.videoPath, startInSeconds, duration, props.video.text.substring(startIndex, endIndex))
+        }
     }
-
     return (
         <div>
-            { props.videoOnPlay ? <button className="ui button" onClick={() => props.setVideoOnPlay(false)}>Pause</button>:
-                <button className="ui button" onClick={() => props.setVideoOnPlay(true)}>Play</button>
+            { props.videoOnPlay ? <button className="medium ui button" onClick={() => props.setVideoOnPlay(false)}>Pause</button>:
+                <button className="large ui button" onClick={() => props.setVideoOnPlay(true)}>Play</button>
             }
-            <i className="edit icon" onClick={convertToEditor}/>
+            <i className="big edit icon" onClick={convertToEditor}/>
             
             <br/>
             <div className='row'>

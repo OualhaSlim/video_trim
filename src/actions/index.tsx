@@ -40,12 +40,6 @@ export const fetchVideo = () => async (dispatch: any) => {
                     // an other speaker will come
                     fullText.concat("\n")
                 })
-                for(const speakerData of transcriptData.monologues){
-                    if(speakerData.elements){
-                    speakerData.elements.forEach((elt: any ,index: number) => fullText= fullText + elt.value)
-                    }
-                    fullText.concat("\n")
-                }
                 response = {
                     videoPath: videoPath,
                     nbSpeakers: speakersCounter,
