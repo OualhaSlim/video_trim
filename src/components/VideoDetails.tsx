@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { RingLoader } from 'react-spinners';
 import TextField from './TextField';
 import VideoPlayer from './VideoPlayer';
-import CroppedVideo from './CroppedVideo';
 
 const override = `
   position: fixed;
@@ -26,8 +25,8 @@ const VideoDetails = (props: any)=>{
     }, [])
 
     useEffect(()=>{
-        setIsLoading(false)
-    }, [props.croppedVideo])
+        if(props.video?.videoPath) setIsLoading(false);
+    }, [props.video])
 
     return(
         <>
@@ -52,16 +51,14 @@ const VideoDetails = (props: any)=>{
             <div className='row'>
                 <TextField  videoOnPlay={videoOnPlay} setVideoOnPlay={setVideoOnPlay} setIsLoading={setIsLoading}/>
             </div>
-            <CroppedVideo video={props.croppedVideo} />
         </div>}
     </>
     )
 };
 
-const mapStateToProps = (state: any) =>{
-    return { 
-        video: state.videos_store.source_video,
-        croppedVideo : state.videos_store.cropped_video
+const mapStateToProps = ({ videos_store }: any) =>{
+    return {
+        video: videos_store.video_on_display,
     };
 };
 

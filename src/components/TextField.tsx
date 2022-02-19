@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { generateCroppedVideo } from '../actions';
+import { trimVideo } from '../actions';
 import { Editor, ContentState, EditorState } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
@@ -8,6 +8,7 @@ const createFromText = ContentState.createFromText
 const createWithContent = EditorState.createWithContent
 
 const TextField = (props:any) =>{
+    console.log(props.video)
     const [editorState, setEditorState] = useState(createWithContent(createFromText(props.video.text)));
     const [editIsEnabled, setEditIsEnabled] = useState(false)
     const [textStyle, setTextStyle] = useState("")
@@ -22,7 +23,6 @@ const TextField = (props:any) =>{
         else setTextStyle("");
     }, [editIsEnabled])
 
-    // TODO if start==end do nothing
     const generateTrimmedVideo = async (e: any) => {
         e.preventDefault();
         // Getting index of selected text 
@@ -30,11 +30,8 @@ const TextField = (props:any) =>{
         const startIndex = selectionState.getStartOffset();
         const endIndex = selectionState.getEndOffset()
         if(startIndex !== endIndex){
-            const startInSeconds = props.video.timeStamp[startIndex]
-            const duration = props.video.timeStamp[endIndex] - props.video.timeStamp[startIndex]
-            
             props.setIsLoading(true)
-            props.generateCroppedVideo(props.video.videoPath, startInSeconds, duration, props.video.text.substring(startIndex, endIndex))
+            props.trimVideo(props.video, startIndex, endIndex)
         }
     }
     return (
@@ -43,8 +40,7 @@ const TextField = (props:any) =>{
                 <button className="large ui button" onClick={() => props.setVideoOnPlay(true)}>Play</button>
             }
             <i className="big edit icon" onClick={convertToEditor}/>
-            
-            <br/>
+
             <div className='row'>
                 <div className={textStyle}>
                     <Editor
@@ -61,8 +57,8 @@ const TextField = (props:any) =>{
       );
 }
 
-const mapStateToProps = (state: any) =>{
-    return { video: state.videos_store.source_video };
+const mapStateToProps = ({ videos_store }: any) =>{
+    return { video: videos_store.video_on_display };
 };
 
-export default connect(mapStateToProps, { generateCroppedVideo })( TextField);
+export default connect(mapStateToProps, { trimVideo })( TextField);
