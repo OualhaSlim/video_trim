@@ -7,13 +7,17 @@ const availableVideos = [
     {label: "Reaction time 2", path: "videos/Reaction_Time.mp4", transcript: "videos/transcript.json"},
 ]
 
-const DemoIntroduction = (props: any)=>{
+type DemoIntroductionProps = {
+    setDisplayVideoDetails:React.Dispatch<React.SetStateAction<boolean>>,
+    fetchVideo: any
+  };
+
+const DemoIntroduction: React.FC<DemoIntroductionProps> = (props: any)=>{
     
     const goToVideoDetails = (event: React.MouseEvent<HTMLButtonElement>)=>{
         event.preventDefault();
         props.setDisplayVideoDetails(true);
         const selectedVideoIndex = parseInt(event.currentTarget.value)
-        console.log(selectedVideoIndex)
         const videoPath = availableVideos[selectedVideoIndex]['path'];
         const transcriptPath = availableVideos[selectedVideoIndex]['transcript']
         const videoTitle = availableVideos[selectedVideoIndex]['label']

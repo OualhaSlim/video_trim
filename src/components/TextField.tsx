@@ -9,13 +9,21 @@ const createWithContent = EditorState.createWithContent
 const forceSelection = EditorState.forceSelection
 const toggleInlineStyle = RichUtils.toggleInlineStyle
 
+type TextFieldProps = {
+    videoOnPlay: boolean,
+    setVideoOnPlay:React.Dispatch<React.SetStateAction<boolean>>,
+    setIsLoading:React.Dispatch<React.SetStateAction<boolean>>,
+    trimVideo: any,
+    video?: any
+  };
+
 const styleMap = {
     'HIGHLIGHT': {
       'backgroundColor': '#2b27fa'
     }
   };
 
-const TextField = (props:any) =>{
+const TextField: React.FC<TextFieldProps> = (props) =>{
     const [editorState, setEditorState] = useState(createWithContent(createFromText(props.video.text)));
     const [editIsEnabled, setEditIsEnabled] = useState(false)
     const [textStyle, setTextStyle] = useState("")
@@ -27,20 +35,22 @@ const TextField = (props:any) =>{
     }
 
     const highlightSelectedText = () =>{
-        const start = props.video.startIndex
-        const end = props.video.endIndex
-        const selectionState = editorState.getSelection();
-        const newSelection = selectionState.merge({
-            anchorOffset: start,
-            focusOffset: end
-        })
-        const editorStateWithNewSelection = forceSelection(editorState, newSelection);
-        const editorStateWithStyles = toggleInlineStyle(editorStateWithNewSelection,'HIGHLIGHT')
-        const editorStateWithStylesAndPreviousSelection = forceSelection(
-            editorStateWithStyles,
-            selectionState
-        )
-        setEditorState(editorStateWithStylesAndPreviousSelection);
+        if(editIsEnabled === true){
+            const start = props.video.startIndex
+            const end = props.video.endIndex
+            const selectionState = editorState.getSelection();
+            const newSelection = selectionState.merge({
+                anchorOffset: start,
+                focusOffset: end
+            })
+            const editorStateWithNewSelection = forceSelection(editorState, newSelection);
+            const editorStateWithStyles = toggleInlineStyle(editorStateWithNewSelection,'HIGHLIGHT')
+            const editorStateWithStylesAndPreviousSelection = forceSelection(
+                editorStateWithStyles,
+                selectionState
+            )
+            setEditorState(editorStateWithStylesAndPreviousSelection);
+        }
     }
 
     const generateTrimmedVideo = async (e: any) => {
@@ -58,7 +68,7 @@ const TextField = (props:any) =>{
     useEffect(()=>{
         if(editIsEnabled === true) setTextStyle("bg-secondary text-white ui segment");
         else setTextStyle("");
-        if(firstRender === false && props.video.startIndex && props.video.endIndex){
+        if(firstRender === false && props.video.startIndex != undefined && props.video.endIndex!= undefined){
             highlightSelectedText()
         }
         setFirstRender(false)
