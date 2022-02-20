@@ -31,7 +31,7 @@ const VideoDetails = (props: any)=>{
     return(
         <>
         {isLoading || !props.video? <div>
-            <div className="ui huge header center aligned">Creating video in progress...</div>
+            <div className="ui huge header center aligned">Video creation in progress...</div>
                 <RingLoader color={'#36D7B7'} css={override} loading={isLoading} size={200} />
             </div>
         : <div className="ui grid padded" >

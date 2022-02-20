@@ -3,7 +3,7 @@ import {
     TRIM_VIDEO
 }  from './types'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-const ffmpeg = createFFmpeg({ log: false })
+const ffmpeg = createFFmpeg({ log: true })
 
 export const fetchVideo = (videoTitle: string, videoPath: string, transcriptPath: string) => async (dispatch: any) => {
 
@@ -55,8 +55,18 @@ export const trimVideo = (video: any, startIndex: number, endIndex: number) => a
     if(!ffmpeg.isLoaded()) await ffmpeg.load()
     let response = {...video}
     const startTime = video.timeStamp[startIndex]
-    const duration = video.timeStamp[endIndex] - video.timeStamp[startIndex]
-    if(video.originalVideoPath){
+    console.log(endIndex, "and list length is", video.timeStamp.length)
+    const duration = video.timeStamp[endIndex-1] - video.timeStamp[startIndex]
+    console.log(startTime, "and duration is", duration)
+    if(startIndex === 0 && endIndex === video.timeStamp.length){
+        response = {...video,
+            videoPath: video.originalVideoPath,
+            duration: Math.round(duration),
+            startIndex: startIndex,
+            endIndex: endIndex
+        }
+    }
+    else if(video.originalVideoPath){
         ffmpeg.FS('writeFile', 'input_video.mp4', await fetchFile(video.originalVideoPath));
 
         await ffmpeg.run('-i', `input_video.mp4`, '-t', `${duration}`, '-ss', `${startTime}`, '-f', 'mp4', 'cropped_video.mp4')

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = () =>{
+const Header = (props:any) =>{
     return(
         <div className="ui secondary pointing menu">
             <img
@@ -9,6 +9,7 @@ const Header = () =>{
                 width="60"
                 height="60"
                 className="d-inline-block align-top"
+                onClick={()=> props.setDisplayVideoDetails(false)}
             />
         </div>
     );
