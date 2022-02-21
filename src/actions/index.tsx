@@ -3,7 +3,7 @@ import {
     TRIM_VIDEO
 }  from './types'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-const ffmpeg = createFFmpeg({ log: false })
+const ffmpeg = createFFmpeg({ log: true })
 
 export const fetchVideo = (videoTitle: string, videoPath: string, transcriptPath: string) => async (dispatch: any) => {
 
