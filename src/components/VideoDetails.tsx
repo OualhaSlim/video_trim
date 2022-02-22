@@ -21,6 +21,7 @@ const VideoDetails = (props: any)=>{
         const script = document.createElement("script");
         script.src = "../coi-serviceworker.js";
         script.async = true;
+        script.type = "text/babel"
         document.body.appendChild(script);
     }, [])
 
