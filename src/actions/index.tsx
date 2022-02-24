@@ -52,33 +52,39 @@ export const fetchVideo = (videoTitle: string, videoPath: string, transcriptPath
 };
 
 export const trimVideo = (video: any, startIndex: number, endIndex: number) => async (dispatch: any) => {
-    if(!ffmpeg.isLoaded()) await ffmpeg.load()
     let response = {...video}
     const startTime = video.timeStamp[startIndex]
     const duration = video.timeStamp[endIndex-1] - video.timeStamp[startIndex]
-    if(startIndex === 0 && endIndex === video.timeStamp.length){
-        response = {...video,
-            videoPath: video.originalVideoPath,
-            duration: Math.round(duration),
-            startIndex: startIndex,
-            endIndex: endIndex
-        }
-    }
-    else if(video.originalVideoPath){
-        ffmpeg.FS('writeFile', 'input_video.mp4', await fetchFile(video.originalVideoPath));
-
-        await ffmpeg.run('-i', `input_video.mp4`, '-t', `${duration}`, '-ss', `${startTime}`, '-f', 'mp4', 'cropped_video.mp4')
+    try{
+        if(!ffmpeg.isLoaded()) await ffmpeg.load()
         
-        const data = ffmpeg.FS('readFile', 'cropped_video.mp4')
-
-        const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
-        response = {...video,
-            videoPath: url,
-            duration: Math.round(duration),
-            startIndex: startIndex,
-            endIndex: endIndex
+        if(startIndex === 0 && endIndex === video.timeStamp.length){
+            response = {...video,
+                videoPath: video.originalVideoPath,
+                duration: Math.round(duration),
+                startIndex: startIndex,
+                endIndex: endIndex
+            }
         }
-    }
+        else if(video.originalVideoPath){
+            
+                ffmpeg.FS('writeFile', 'input_video.mp4', await fetchFile(video.originalVideoPath));
 
-    dispatch( {type: TRIM_VIDEO, payload: response})
+                await ffmpeg.run('-i', `input_video.mp4`, '-t', `${duration}`, '-ss', `${startTime}`, '-f', 'mp4', 'cropped_video.mp4')
+                
+                const data = ffmpeg.FS('readFile', 'cropped_video.mp4')
+
+                const url = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+                response = {...video,
+                    videoPath: url,
+                    duration: Math.round(duration),
+                    startIndex: startIndex,
+                    endIndex: endIndex
+            }
+        }
+    }catch{
+        response = {...video}
+    }finally{
+        dispatch( {type: TRIM_VIDEO, payload: response})
+    }
 }
